@@ -1,0 +1,138 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: LEGION
+  Date: 2022/9/6
+  Time: 15:27
+  To change this template use File | Settings | File Templates.
+--%>
+<% String path = request.getContextPath();%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>MintStatus Verifier</title>
+</head>
+
+
+<body>
+<jsp:include page="/index.jsp"/>
+
+<button type="button" onclick="addScholar()">AddScholar</button>
+<form method="post" id="queryForm" action="<%=path%>/_userservlet">
+    <input type="text" name="Address"  placeholder="scholar address"/>
+    <%--    <input type="text" name="userName"  placeholder="姓名"/>--%>
+    <%--若想在查询框中留下输入记录 加 value="${user.userId}" 以及 value = "${user.userName}"--%>
+    <select name="status">
+        <option value="">mintStatus</option>
+        <option value="1" >true</option>
+        <%--若想留下性别输入记录 加 <c:if test="${user.gender == 1}">selected</c:if> --%>
+        <option value="0" >false</option>
+    </select>
+    <input type="hidden" name="type" value="15"/>
+    <input type="hidden" name="pageNum" value="${pageNum}"/>
+    <input type="hidden" name="changeNum" id="changeNum" />
+    <button onclick="changePage(0)">查 询</button>
+</form>
+<%--加入边框--%>
+<table border="2">
+    <tr>
+        <td>序号</td>
+        <td>address</td>
+        <td>roleName</td>
+        <td>mintStatus</td>
+        <td>mintNum</td>
+        <td>操作</td>
+    </tr>
+    <%--    items用于接收servlet的值 --%>
+    <c:forEach items="${verifier}" var="l" varStatus="vs">
+        <tr>
+            <input type="hidden" name="syncNum" value="${pageNum}"/>
+            <td>${vs.index + 1}</td>
+            <td>${l.address}</td>
+            <td>${l.roleName}</td>
+            <td>${l.status == 1 ? 'true':'false'}</td>
+            <td>${l.mintnum}</td>
+            <td>
+                <button type="button" onclick="editVerifier('${l.address}')" >edit</button>
+                <button type="button" onclick="deleteVerifier('${l.address}')" >delete</button>
+            </td>
+        </tr>
+
+    </c:forEach>
+</table>
+<button type="button" onclick="changePage(-1);">上一页</button>
+<button type="button" onclick="changePage(1);">下一页</button>
+<button type="button" onclick="changePage(-100)">首页</button>
+<button type="button" onclick="changePage(100)">尾页</button><br>
+当前第 ${pageNum}页，共 ${totalPage}页 ，共 ${totalNum}条记录
+
+</body>
+
+
+</html>
+<script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+<script>
+    const sbtAbi = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"approved","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":false,"internalType":"bool","name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_to","type":"address"},{"internalType":"bool","name":"_mintStatus","type":"bool"}],"name":"changeMintStatus","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"string","name":"_uri","type":"string"}],"name":"changeuriIpfs","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"max_supply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ownerOf","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"safeMint","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"bool","name":"approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_verifier","type":"address"},{"internalType":"bool","name":"_permission","type":"bool"}],"name":"setVerifier","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes4","name":"interfaceId","type":"bytes4"}],"name":"supportsInterface","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"transferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"uriIpfs","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}]
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const sbt_addr="0xf86307998ABA1829530230a0852dE2C418C72D2e";
+
+
+    function changePage(num) {
+        document.getElementById("changeNum").value = num ;
+        document.getElementById("queryForm").submit();
+    }
+
+    function addScholar() {
+        window.location.href = "<%=path%>/addScholar.jsp"
+    }
+
+    function editVerifier(address) {
+        window.location.href = "<%=path%>/_userservlet?type=22&address="+address;
+    }
+
+    async function deleteVerifier(address) {
+        if(window.confirm("Are you sure delete the scholar？")){
+            const signer = provider.getSigner();
+            const sbt = new ethers.Contract(sbt_addr, sbtAbi, signer);
+            //与合约交互；
+            await  sbt.changeMintStatus(address,false);
+            window.location.href = "<%=path%>/_userservlet?type=23&daddress="+address;
+
+        }
+        <%--window.location.href = "<%=path%>/_userservlet?type=3",params = 'userId='+userId;--%>
+    }
+
+    async function connect() {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        provider.provider.selectedAddress
+
+        const accounts = await provider.send("eth_requestAccounts",[]);
+        const provider1 = new ethers.providers.Web3Provider(window["ethereum"]);
+        const signer = await provider1.getSigner();
+        console.log("signer", signer);
+        if(accounts[0]){
+            let acc = accounts[0];
+            let network = await provider.getNetwork();
+            let networkName = ""
+            if (network.chainId == 80001){
+                networkName = "Polygon Mumbai"
+            }else networkName = "Wrong Network,please change to Polygon Mumbai"
+            const accfront = acc.slice(0,4)
+            const accbehind = acc.slice(-4)
+            document.getElementById("Accountsvalue").innerHTML = accfront+"..."+accbehind
+            document.getElementById("Accountsbutton").innerHTML = "已连接"
+            document.getElementById("network").innerHTML = networkName
+            document.getElementById("address").value = acc
+        }
+
+
+    }
+
+    ethereum.on('accountsChanged',(accounts) => {
+        window.location.href = "<%=path%>/_logoutservlet"
+
+    })
+    ethereum.on('networkChanged',(network) => {
+        connect();
+    })
+</script>
